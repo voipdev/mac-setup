@@ -1,0 +1,224 @@
+# =============================================================================
+# PATH + Homebrew (must be first)
+# =============================================================================
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+[[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+[[ -f /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
+
+# =============================================================================
+# Zsh Options
+# =============================================================================
+setopt AUTO_CD EXTENDED_GLOB INTERACTIVE_COMMENTS NULL_GLOB
+setopt AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
+setopt SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE
+setopt INC_APPEND_HISTORY HIST_REDUCE_BLANKS HIST_VERIFY
+
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=100000
+
+# =============================================================================
+# Completion
+# =============================================================================
+autoload -Uz compinit
+# Regenerate compdump once per day max
+if [[ -n "$HOME/.zcompdump"(N.mh+24) ]]; then compinit; else compinit -C; fi
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*' group-name ''
+
+# =============================================================================
+# antidote — plugin manager
+# =============================================================================
+if [[ -f $(brew --prefix 2>/dev/null)/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
+  antidote load
+fi
+
+# =============================================================================
+# Plugin Configuration
+# =============================================================================
+# Autosuggestions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"
+bindkey '^ ' autosuggest-accept         # Ctrl-Space accepts suggestion
+
+# History substring search
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+
+# fzf-tab previews
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --color=always $realpath 2>/dev/null | head -50'
+zstyle ':fzf-tab:complete:*:*'  fzf-preview 'bat --color=always --line-range=:50 $realpath 2>/dev/null'
+zstyle ':fzf-tab:*' switch-group ',' '.'
+
+# =============================================================================
+# Tool Activations
+# =============================================================================
+command -v mise   &>/dev/null && eval "$(mise activate zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh --cmd cd)"
+command -v atuin  &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
+# fzf key bindings (Ctrl-R overridden by atuin; Ctrl-T and Alt-C remain)
+if [[ -f "$(brew --prefix 2>/dev/null)/opt/fzf/shell/key-bindings.zsh" ]]; then
+  source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+  source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
+fi
+
+# iTerm2 shell integration (marks, imgcat, jump-to-command)
+[[ -f ~/.iterm2_shell_integration.zsh ]] && source ~/.iterm2_shell_integration.zsh
+
+# =============================================================================
+# Environment
+# =============================================================================
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="bat --paging=always"
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANROFFOPT="-c"
+export BAT_THEME="Catppuccin-mocha"
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
+export LANG="en_US.UTF-8"
+
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS='
+  --height=60% --layout=reverse --border=rounded
+  --bind=ctrl-/:toggle-preview
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+  --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range=:100 {}'"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -50'"
+
+# =============================================================================
+# Aliases
+# =============================================================================
+alias sz="source $HOME/.zshrc"
+alias zrc="nvim $HOME/.zshrc"
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# eza (ls replacement)
+alias ls='eza --icons --group-directories-first'
+alias l='eza --icons --group-directories-first -la'
+alias ll='eza --icons --group-directories-first -l'
+alias la='eza --icons --group-directories-first -a'
+alias lt='eza --icons --tree --level=2'
+
+# bat (cat replacement)
+alias cat='bat --paging=never'
+
+# Modern tool replacements
+alias grep='rg'
+alias find='fd'
+alias ps='procs'
+alias top='btm'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias gd='git diff'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias glg='git log --oneline --graph --decorate'
+alias lg='lazygit'
+
+# Neovim
+alias v='nvim'
+alias vi='nvim'
+alias vim='nvim'
+
+# tmux
+alias ta='tmux attach'
+alias tl='tmux ls'
+alias tn='tmux new-session -s'
+alias tk='tmux kill-session -t'
+
+# Homebrew
+alias bri='brew install'
+alias brs='brew search'
+alias bru='brew upgrade'
+alias brl='brew list'
+
+# chezmoi
+alias cz='chezmoi'
+alias cza='chezmoi add'
+alias czd='chezmoi diff'
+alias cze='chezmoi edit'
+alias czu='chezmoi update'
+
+# System
+alias reload='exec zsh'
+alias path='echo $PATH | tr ":" "\n"'
+alias ip='ipconfig getifaddr en0'
+alias ports='lsof -i -P -n | grep LISTEN'
+
+# =============================================================================
+# Functions
+# =============================================================================
+
+# mkdir + cd
+function mkcd() { mkdir -p "$1" && cd "$1" }
+
+# Fuzzy jump to any dir
+function fcd() {
+  local dir
+  dir=$(fd --type d --hidden --exclude .git | fzf --preview 'eza --tree --color=always {}') && cd "$dir"
+}
+
+# Fuzzy find + edit in nvim
+function fe() {
+  local file
+  file=$(fzf --preview 'bat --color=always {}') && nvim "$file"
+}
+
+# Browse git commits with diff preview
+function glog() {
+  git log --oneline --color=always | fzf --ansi \
+    --preview 'git show --color=always {1}' \
+    --bind 'enter:execute(git show --color=always {1} | bat --paging=always)'
+}
+
+# Extract any archive
+function extract() {
+  case "$1" in
+    *.tar.bz2) tar xjf "$1" ;;  *.tar.gz)  tar xzf "$1" ;;
+    *.tar.xz)  tar xJf "$1" ;;  *.bz2)     bunzip2 "$1" ;;
+    *.gz)      gunzip "$1"  ;;  *.zip)      unzip "$1"   ;;
+    *.7z)      7z x "$1"    ;;  *) echo "Unknown format: $1" ;;
+  esac
+}
+
+# Quick HTTP server
+function serve() { python3 -m http.server "${1:-8000}" }
+
+# =============================================================================
+# Key Bindings
+# =============================================================================
+bindkey -e  # emacs mode (vim lives in nvim, not the shell)
+
+# Edit long commands in nvim with Ctrl-X Ctrl-E
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+
+# =============================================================================
+# Prompt — Starship (must be last)
+# =============================================================================
+command -v starship &>/dev/null && eval "$(starship init zsh)"
