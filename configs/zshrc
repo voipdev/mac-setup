@@ -78,9 +78,20 @@ fi
 # =============================================================================
 # Environment
 # =============================================================================
-export EDITOR="nvim"
-export VISUAL="nvim"
+if command -v nvim &>/dev/null; then
+  export EDITOR="nvim"
+  export VISUAL="nvim"
+else
+  export EDITOR="vim"
+  export VISUAL="vim"
+fi
 export PAGER="bat --paging=always"
+
+# Colors for macOS ls (-G flag) and zsh completion
+export CLICOLOR=1
+export LSCOLORS="GxFxCxDxBxegedabagaced"
+# GNU-style LS_COLORS for zsh completion coloring
+export LS_COLORS="di=1;36:ln=1;35:so=1;32:pi=1;33:ex=1;31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export MANROFFOPT="-c"
 export BAT_THEME="Catppuccin-mocha"
@@ -117,6 +128,12 @@ if command -v eza &>/dev/null; then
   alias ll='eza --icons --group-directories-first -l'
   alias la='eza --icons --group-directories-first -a'
   alias lt='eza --icons --tree --level=2'
+else
+  # Fallback: colorized macOS ls
+  alias ls='ls -G'
+  alias l='ls -laG'
+  alias ll='ls -lG'
+  alias la='ls -aG'
 fi
 
 # bat (cat replacement)
