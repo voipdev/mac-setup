@@ -36,22 +36,19 @@ Add the eval line to `~/.zshrc` permanently (already included in the zshrc below
 
 ---
 
-## Step 2 — Fonts
+## Step 2 — Install Everything via Brewfile
+
+All packages (formulae, casks, fonts) are tracked in `Brewfile`. One command installs everything:
 
 ```bash
-brew install --cask font-jetbrains-mono-nerd-font font-symbols-only-nerd-font
+brew bundle --file=Brewfile
 ```
 
----
+To add a new package later, add it to `Brewfile` and re-run `brew bundle`.
 
-## Step 3 — Install All Tools
-
+To dump your current installed packages into the Brewfile:
 ```bash
-brew install eza bat fd ripgrep delta dust duf procs bottom sd \
-             fzf zoxide git lazygit gh tmux tree jq yq wget tldr \
-             direnv neovim mise starship atuin antidote chezmoi
-
-brew install --cask aerospace
+brew bundle dump --file=Brewfile --force
 ```
 
 ---
