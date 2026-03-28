@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+id_*
+*.secret
+
+# iTerm2 full config (may contain tokens/session data)
+configs/iterm2-config.xml
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Misc
+*.bak
+*.tmp
