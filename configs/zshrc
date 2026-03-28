@@ -267,6 +267,35 @@ bindkey -M viins '^A' beginning-of-line
 bindkey -M viins '^E' end-of-line
 
 # =============================================================================
-# Prompt — Starship (must be last)
+# Prompt — Starship + Vi-mode indicator (must be last)
 # =============================================================================
-command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+# Vi-mode indicator in RPROMPT — shows [N] or [I]
+function zle-keymap-select zle-line-init {
+  case $KEYMAP in
+    vicmd)      VI_MODE="%F{red}[N]%f" ;;
+    viins|main) VI_MODE="%F{green}[I]%f" ;;
+  esac
+  zle reset-prompt
+}
+zle -N zle-keymap-select
+zle -N zle-line-init
+VI_MODE="%F{green}[I]%f"  # default to insert
+
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+  # Starship handles left prompt (dir, git, langs, time)
+  # Vi-mode goes in right prompt
+  RPROMPT='${VI_MODE}'
+else
+  # Fallback prompt when Starship is not installed
+  autoload -Uz vcs_info
+  precmd() { vcs_info }
+  zstyle ':vcs_info:git:*' formats ' %F{magenta}(%b)%f'
+  zstyle ':vcs_info:*' enable git
+  setopt PROMPT_SUBST
+  PROMPT='${VI_MODE} %F{cyan}%~%f${vcs_info_msg_0_} %F{white}❯%f '
+  RPROMPT='%F{240}%T%f'
+fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
