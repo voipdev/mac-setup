@@ -3,6 +3,7 @@
 
 # Taps
 tap "nikitabobko/tap"     # AeroSpace window manager
+tap "oven-sh/bun"         # Bun JS runtime
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
@@ -44,6 +45,10 @@ brew "neovim"
 
 # Runtime manager
 brew "mise"         # replaces nvm + pyenv + rbenv
+
+# Package managers
+brew "oven-sh/bun/bun"  # bun — replaces npm
+brew "uv"               # uv — replaces pip
 
 # Dotfile manager
 brew "chezmoi"
