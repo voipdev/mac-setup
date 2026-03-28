@@ -133,8 +133,8 @@ cp configs/CLAUDE.md ~/.claude/CLAUDE.md
 
 ```bash
 # Identity — change these to your own
-git config --global user.name "Bilal Dar"
-git config --global user.email "bilalarifdar@gmail.com"
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
 
 # Sensible defaults
 git config --global init.defaultBranch main
@@ -158,7 +158,7 @@ git config --global diff.colorMoved default
 ## Step 9 — SSH Keys
 
 ```bash
-ssh-keygen -t ed25519 -C "bilalarifdar@gmail.com"
+ssh-keygen -t ed25519 -C "you@example.com"
 ```
 
 Add to GitHub:
