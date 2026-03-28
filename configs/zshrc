@@ -136,6 +136,9 @@ else
   alias la='ls -aG'
 fi
 
+# tree with color
+alias tree='tree -C'
+
 # bat (cat replacement)
 command -v bat &>/dev/null && alias cat='bat --paging=never'
 
