@@ -2,7 +2,7 @@
 # Add new packages here as you install them.
 
 # Taps
-tap "homebrew/bundle"
+tap "nikitabobko/tap"     # AeroSpace window manager
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
@@ -57,5 +57,5 @@ brew "watch"
 brew "tldr"
 
 # Apps
-cask "aerospace"    # tiling window manager
+cask "nikitabobko/tap/aerospace"  # tiling window manager
 cask "git-credential-manager"  # Git auth
