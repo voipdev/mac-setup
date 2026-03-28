@@ -238,13 +238,18 @@ function glog() {
     --bind 'enter:execute(git show --color=always {1} | bat --paging=always)'
 }
 
-# Extract any archive
+# Extract any archive (hardened against path traversal)
 function extract() {
+  local dest="${2:-.}"
+  mkdir -p "$dest"
   case "$1" in
-    *.tar.bz2) tar xjf "$1" ;;  *.tar.gz)  tar xzf "$1" ;;
-    *.tar.xz)  tar xJf "$1" ;;  *.bz2)     bunzip2 "$1" ;;
-    *.gz)      gunzip "$1"  ;;  *.zip)      unzip "$1"   ;;
-    *.7z)      7z x "$1"    ;;  *) echo "Unknown format: $1" ;;
+    *.tar.bz2|*.tar.gz|*.tar.xz)
+      tar --no-absolute-filenames -xf "$1" -C "$dest" ;;
+    *.bz2)     bunzip2 -k "$1" ;;
+    *.gz)      gunzip -k "$1"  ;;
+    *.zip)     unzip -o "$1" -d "$dest" | grep -q '\.\.' && echo "Warning: archive contains ../ paths" ;;
+    *.7z)      7z x "$1" -o"$dest" ;;
+    *) echo "Unknown format: $1" ;;
   esac
 }
 
@@ -288,8 +293,6 @@ VI_MODE="%F{green}[I]%f"  # default to insert
 
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
-  # Starship handles left prompt (dir, git, langs, time)
-  # Vi-mode goes in right prompt
   RPROMPT='${VI_MODE}'
 else
   # Fallback prompt when Starship is not installed

@@ -1,16 +1,4 @@
-format = """
-[](surface0)\
-$os$username\
-[](bg:peach fg:surface0)\
-$directory\
-[](fg:peach bg:green)\
-$git_branch$git_status\
-[](fg:green bg:teal)\
-$nodejs$rust$golang$python\
-[](fg:teal bg:purple)\
-$time\
-[ ](fg:purple)\
-$line_break$character"""
+format = "$character"
 
 palette = 'catppuccin_mocha'
 
@@ -42,68 +30,6 @@ base="#1e1e2e"
 mantle="#181825"
 crust="#11111b"
 purple="#cba6f7"
-
-[os]
-disabled = false
-style = "bg:surface0 fg:text"
-
-[os.symbols]
-Macos = ""
-
-[username]
-show_always = true
-style_user  = "bg:surface0 fg:text"
-style_root  = "bg:surface0 fg:red"
-format      = '[ $user ]($style)'
-
-[directory]
-style             = "fg:mantle bg:peach"
-format            = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
-
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Developer" = "󰲋 "
-
-[git_branch]
-symbol = ""
-style  = "bg:green"
-format = '[[ $symbol $branch ](fg:mantle bg:green)]($style)'
-
-[git_status]
-style  = "bg:green"
-format = '[[($all_status$ahead_behind )](fg:mantle bg:green)]($style)'
-
-[nodejs]
-symbol = ""
-style  = "bg:teal"
-format = '[[ $symbol( $version) ](fg:mantle bg:teal)]($style)'
-
-[python]
-symbol = ""
-style  = "bg:teal"
-format = '[[ $symbol( $version) ](fg:mantle bg:teal)]($style)'
-
-[golang]
-symbol = ""
-style  = "bg:teal"
-format = '[[ $symbol( $version) ](fg:mantle bg:teal)]($style)'
-
-[rust]
-symbol = ""
-style  = "bg:teal"
-format = '[[ $symbol( $version) ](fg:mantle bg:teal)]($style)'
-
-[time]
-disabled    = false
-time_format = "%R"
-style       = "bg:purple"
-format      = '[[  $time ](fg:mantle bg:purple)]($style)'
-
-[line_break]
-disabled = false
 
 [character]
 success_symbol = '[❯](bold fg:green)'

@@ -8,7 +8,7 @@ Modern macOS power user setup. Run these steps in order on a fresh machine.
 |---|---|
 | Terminal | iTerm2 |
 | Shell | zsh + antidote (plugin mgr) + vi-mode |
-| Prompt | Starship (Catppuccin Mocha) |
+| Prompt | Starship (minimal `❯`) + iTerm2 status bar (dir, git, clock) |
 | Shell history | atuin (SQLite, cross-machine sync) |
 | Multiplexer | tmux + tpm |
 | Runtime manager | mise (replaces nvm + pyenv) |
@@ -87,14 +87,14 @@ In iTerm2: **Profiles > Colors > Color Presets... > catppuccin-mocha**
 
 ## Step 6 — iTerm2 GUI Settings (manual, one-time)
 
-- **Appearance > General**: Theme = `Minimal`
+- **Appearance > General**: Theme = `Minimal`, Status bar location = `Bottom`
 - **Profiles > Text**:
   - Font: `JetBrainsMono Nerd Font`, size `14`, enable ligatures
   - Non-ASCII Font: `Symbols Nerd Font Mono`, same size
 - **Profiles > Window**: Columns `220`, Rows `50`, Transparency `5%`, Blur `5`
 - **Profiles > Terminal**: Scrollback lines = `100000`, enable mouse reporting
 - **Profiles > Keys > Key Mappings**: click **Presets...** button at bottom > `Natural Text Editing`
-- **Profiles > Session**: Enable status bar (add CPU, memory, git branch components)
+- **Profiles > Session**: Enable status bar, click **Configure Status Bar**, add: Current Directory, Git State, Clock
 - **Advanced**: search "GPU" > enable GPU renderer
 
 ---
