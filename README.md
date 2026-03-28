@@ -173,7 +173,37 @@ git config --global diff.colorMoved default
 
 ---
 
-## Step 12 — chezmoi Dotfile Tracking
+## Step 12 — SSH Keys
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+```
+
+Add to GitHub:
+```bash
+cat ~/.ssh/id_ed25519.pub | pbcopy
+# Paste in GitHub > Settings > SSH and GPG keys
+```
+
+---
+
+## Step 13 — iTerm2 Config Backup
+
+Export iTerm2 preferences (for future machine migration):
+```bash
+plutil -convert xml1 -o ~/Stash/repos/mac-setup/configs/iterm2-config.xml \
+  ~/Library/Preferences/com.googlecode.iterm2.plist
+```
+
+Import on a new machine:
+```bash
+plutil -convert binary1 -o ~/Library/Preferences/com.googlecode.iterm2.plist \
+  ~/Stash/repos/mac-setup/configs/iterm2-config.xml
+```
+
+---
+
+## Step 14 — chezmoi Dotfile Tracking
 
 ```bash
 chezmoi init
@@ -216,14 +246,17 @@ chezmoi diff                # no diff = dotfiles in sync
 
 ## Key Bindings Reference
 
-### Shell
+### Shell (vi-mode)
 | Key | Action |
 |---|---|
+| `ESC` | enter vi normal mode (hjkl, w, b, 0, $, etc.) |
+| `i` / `a` | back to insert mode |
 | `Ctrl-R` | atuin history search (full-screen, filterable) |
 | `Ctrl-T` | fzf file search |
 | `Alt-C` | fzf cd into directory |
 | `Ctrl-Space` | accept autosuggestion |
 | `Ctrl-X Ctrl-E` | edit current command in nvim |
+| `Ctrl-A` / `Ctrl-E` | beginning/end of line (in insert mode) |
 | `Tab` | fzf-tab completion with preview |
 
 ### tmux (prefix = `Ctrl-a`)
@@ -253,6 +286,8 @@ chezmoi diff                # no diff = dotfiles in sync
 | Alias | Expands to |
 |---|---|
 | `v` / `vim` / `vi` | `nvim` |
+| `vimdiff` | `nvim -d` |
+| `python` | `python3` |
 | `cat` | `bat --paging=never` |
 | `ls` / `ll` / `l` / `la` / `lt` | `eza` variants |
 | `grep` | `rg` (ripgrep) |

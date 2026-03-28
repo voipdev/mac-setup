@@ -1,7 +1,7 @@
 # =============================================================================
 # PATH + Homebrew (must be first)
 # =============================================================================
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 [[ -f /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
 
@@ -91,7 +91,18 @@ export PAGER="bat --paging=always"
 export CLICOLOR=1
 export LSCOLORS="GxFxCxDxBxegedabagaced"
 # GNU-style LS_COLORS for zsh completion coloring
-export LS_COLORS="di=1;36:ln=1;35:so=1;32:pi=1;33:ex=1;31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+export LS_COLORS='di=1;32:ln=1;30;47:so=30;45:pi=30;45:ex=1;31:bd=30;46:cd=30;46:su=30;41:sg=30;41:tw=30;41:ow=30;41'
+export GREP_COLORS='sl=49;39:cx=49;39:mt=49;31;1:fn=49;32:ln=49;33:bn=49;33:se=1;36'
+
+# Colored man pages fallback (used when bat is not available)
+export LESS_TERMCAP_mb=$'\E[01;31m'
+export LESS_TERMCAP_md=$'\E[01;38;5;74m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[38;5;246m'
+export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[04;38;5;146m'
+
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export MANROFFOPT="-c"
 export BAT_THEME="Catppuccin-mocha"
@@ -166,7 +177,11 @@ if command -v nvim &>/dev/null; then
   alias v='nvim'
   alias vi='nvim'
   alias vim='nvim'
+  alias vimdiff='nvim -d'
 fi
+
+# Python
+alias python='python3'
 
 # tmux
 alias ta='tmux attach'
@@ -235,12 +250,21 @@ function serve() { python3 -m http.server "${1:-8000}" }
 # =============================================================================
 # Key Bindings
 # =============================================================================
-bindkey -e  # emacs mode (vim lives in nvim, not the shell)
+bindkey -v  # vi mode for inline command editing
+export KEYTIMEOUT=1  # faster mode switching (10ms)
 
-# Edit long commands in nvim with Ctrl-X Ctrl-E
+# Keep Ctrl-R for history search (atuin handles this)
+bindkey '^R' history-incremental-search-backward
+
+# Edit long commands in nvim with Ctrl-X Ctrl-E (works in both modes)
 autoload -z edit-command-line
 zle -N edit-command-line
-bindkey '^X^E' edit-command-line
+bindkey -M vicmd '^X^E' edit-command-line
+bindkey -M viins '^X^E' edit-command-line
+
+# Ctrl-A/E still work in insert mode (handy even in vi-mode)
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
 
 # =============================================================================
 # Prompt — Starship (must be last)

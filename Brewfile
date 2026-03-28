@@ -34,6 +34,7 @@ brew "direnv"       # per-directory env vars
 brew "git"
 brew "lazygit"      # terminal UI for git
 brew "gh"           # GitHub CLI
+brew "git-filter-repo"  # rewrite git history
 
 # Multiplexer
 brew "tmux"
@@ -52,7 +53,9 @@ brew "tree"
 brew "jq"
 brew "yq"
 brew "wget"
+brew "watch"
 brew "tldr"
 
 # Apps
 cask "aerospace"    # tiling window manager
+cask "git-credential-manager"  # Git auth
