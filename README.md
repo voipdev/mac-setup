@@ -7,12 +7,13 @@ Modern macOS power user setup. Run these steps in order on a fresh machine.
 | Layer | Tool |
 |---|---|
 | Terminal | iTerm2 |
-| Shell | zsh |
-| Plugin manager | antidote |
+| Shell | zsh + antidote (plugin mgr) + vi-mode |
 | Prompt | Starship (Catppuccin Mocha) |
-| Shell history | atuin |
+| Shell history | atuin (SQLite, cross-machine sync) |
 | Multiplexer | tmux + tpm |
-| Runtime manager | mise |
+| Runtime manager | mise (replaces nvm + pyenv) |
+| JS packages | bun (replaces npm) |
+| Python packages | uv (replaces pip) |
 | Editor | Neovim + LazyVim |
 | Dotfiles | chezmoi |
 | Window manager | AeroSpace |
@@ -25,35 +26,29 @@ Modern macOS power user setup. Run these steps in order on a fresh machine.
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-After install, add Homebrew to PATH (Apple Silicon):
-```bash
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
-
-Add the eval line to `~/.zshrc` permanently (already included in the zshrc below).
 
 ---
 
 ## Step 2 — Install Everything via Brewfile
 
-All packages (formulae, casks, fonts) are tracked in `Brewfile`. One command installs everything:
+All packages (formulae, casks, fonts) are tracked in `Brewfile`:
 
 ```bash
 brew bundle --file=Brewfile
 ```
 
-To add a new package later, add it to `Brewfile` and re-run `brew bundle`.
-
-To dump your current installed packages into the Brewfile:
+**Note:** `git-credential-manager` requires sudo — install separately if it fails:
 ```bash
-brew bundle dump --file=Brewfile --force
+brew install --cask git-credential-manager
 ```
+
+To add a new package later, add it to `Brewfile` and re-run `brew bundle`.
 
 ---
 
-## Step 4 — Shell & tmux Integrations
+## Step 3 — Shell & tmux Integrations
 
 ```bash
 # fzf key bindings (non-interactive)
@@ -68,7 +63,7 @@ curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.
 
 ---
 
-## Step 5 — bat Catppuccin Theme
+## Step 4 — bat Catppuccin Theme
 
 ```bash
 mkdir -p "$(bat --config-dir)/themes"
@@ -79,18 +74,18 @@ bat cache --build
 
 ---
 
-## Step 6 — iTerm2 Catppuccin Colors
+## Step 5 — iTerm2 Catppuccin Colors
 
 ```bash
-curl -LO https://raw.githubusercontent.com/catppuccin/iterm/main/colors/Catppuccin-Mocha.itermcolors
-open Catppuccin-Mocha.itermcolors
+curl -LO https://raw.githubusercontent.com/catppuccin/iterm/main/colors/catppuccin-mocha.itermcolors
+open catppuccin-mocha.itermcolors
 ```
 
-In iTerm2: **Color Presets > Catppuccin-Mocha**
+In iTerm2: **Profiles > Colors > Color Presets... > catppuccin-mocha**
 
 ---
 
-## Step 7 — iTerm2 GUI Settings (manual, one-time)
+## Step 6 — iTerm2 GUI Settings (manual, one-time)
 
 - **Appearance > General**: Theme = `Minimal`
 - **Profiles > Text**:
@@ -98,13 +93,13 @@ In iTerm2: **Color Presets > Catppuccin-Mocha**
   - Non-ASCII Font: `Symbols Nerd Font Mono`, same size
 - **Profiles > Window**: Columns `220`, Rows `50`, Transparency `5%`, Blur `5`
 - **Profiles > Terminal**: Scrollback lines = `100000`, enable mouse reporting
-- **Profiles > Keys > Presets**: `Natural Text Editing`
+- **Profiles > Keys > Key Mappings**: click **Presets...** button at bottom > `Natural Text Editing`
 - **Profiles > Session**: Enable status bar (add CPU, memory, git branch components)
-- **Advanced**: GPU renderer = enabled
+- **Advanced**: search "GPU" > enable GPU renderer
 
 ---
 
-## Step 8 — Write Config Files
+## Step 7 — Write Config Files
 
 Copy the config files from the `configs/` directory in this repo:
 
@@ -114,7 +109,6 @@ cp configs/zshrc ~/.zshrc
 cp configs/zsh_plugins.txt ~/.zsh_plugins.txt
 
 # Starship prompt
-mkdir -p ~/.config/starship
 cp configs/starship.toml ~/.config/starship.toml
 
 # tmux
@@ -127,40 +121,28 @@ cp configs/aerospace.toml ~/.config/aerospace/aerospace.toml
 # ripgrep
 mkdir -p ~/.config/ripgrep
 cp configs/ripgrep.conf ~/.config/ripgrep/config
+
+# Claude Code global instructions
+mkdir -p ~/.claude
+cp configs/CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
 ---
 
-## Step 9 — Runtimes & Neovim
+## Step 8 — Git Configuration
 
 ```bash
-# Reload shell to activate new .zshrc
-source ~/.zshrc
+# Identity — change these to your own
+git config --global user.name "Bilal Dar"
+git config --global user.email "bilalarifdar@gmail.com"
 
-# Global runtimes via mise
-mise use --global node@lts
-mise use --global python@3.13
+# Sensible defaults
+git config --global init.defaultBranch main
+git config --global pull.rebase true
+git config --global push.autoSetupRemote true
+git config --global core.editor nvim
 
-# LazyVim
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-rm -rf ~/.config/nvim/.git
-nvim  # plugins auto-install on first launch — wait, then :q
-```
-
----
-
-## Step 10 — tmux Plugins
-
-```bash
-tmux new-session -d -s init
-tmux run-shell ~/.tmux/plugins/tpm/scripts/install_plugins.sh
-```
-
----
-
-## Step 11 — git delta
-
-```bash
+# Delta as diff pager (side-by-side, syntax highlighted)
 git config --global core.pager delta
 git config --global interactive.diffFilter "delta --color-only"
 git config --global delta.navigate true
@@ -173,16 +155,70 @@ git config --global diff.colorMoved default
 
 ---
 
-## Step 12 — SSH Keys
+## Step 9 — SSH Keys
 
 ```bash
-ssh-keygen -t ed25519 -C "your-email@example.com"
+ssh-keygen -t ed25519 -C "bilalarifdar@gmail.com"
 ```
 
 Add to GitHub:
 ```bash
 cat ~/.ssh/id_ed25519.pub | pbcopy
-# Paste in GitHub > Settings > SSH and GPG keys
+# Paste in GitHub > Settings > SSH and GPG keys > New SSH key
+```
+
+---
+
+## Step 10 — Runtimes & Neovim
+
+```bash
+# Reload shell to activate new .zshrc
+source ~/.zshrc
+
+# Global runtimes via mise
+mise use --global node@lts
+mise use --global python@3.13
+
+# LazyVim (neovim config framework)
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+rm -rf ~/.config/nvim/.git
+nvim  # plugins auto-install on first launch — wait, then :q
+```
+
+---
+
+## Step 11 — tmux Plugins
+
+```bash
+tmux new-session -d -s init
+tmux run-shell ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+```
+
+---
+
+## Step 12 — chezmoi Dotfile Tracking
+
+```bash
+chezmoi init
+chezmoi add ~/.zshrc ~/.zsh_plugins.txt \
+             ~/.config/starship.toml \
+             ~/.tmux.conf \
+             ~/.config/ripgrep/config \
+             ~/.config/aerospace/aerospace.toml \
+             ~/.claude/CLAUDE.md
+```
+
+To push to a remote git repo for cross-machine sync:
+```bash
+chezmoi cd
+git remote add origin <your-dotfiles-repo-url>
+git push -u origin main
+```
+
+On a new machine, restore with:
+```bash
+chezmoi init <your-github-username>
+chezmoi apply
 ```
 
 ---
@@ -203,42 +239,18 @@ plutil -convert binary1 -o ~/Library/Preferences/com.googlecode.iterm2.plist \
 
 ---
 
-## Step 14 — chezmoi Dotfile Tracking
-
-```bash
-chezmoi init
-chezmoi add ~/.zshrc ~/.zsh_plugins.txt \
-             ~/.config/starship.toml \
-             ~/.tmux.conf \
-             ~/.config/ripgrep/config \
-             ~/.config/aerospace/aerospace.toml
-```
-
-To push to a remote git repo for cross-machine sync:
-```bash
-chezmoi cd
-git remote add origin <your-dotfiles-repo-url>
-git push -u origin main
-```
-
-On a new machine, restore with:
-```bash
-chezmoi init <your-github-username>
-chezmoi apply
-```
-
----
-
 ## Verification Checklist
 
 ```bash
-starship --version          # prompt installed
-atuin --version             # shell history installed
+starship --version          # prompt
+atuin --version             # shell history
 mise ls                     # node + python runtimes
+bun --version               # JS package manager
+uv --version                # Python package manager
 ls ~                        # eza icons visible
 cat ~/.zshrc                # bat syntax highlighting
-nvim                        # LazyVim + Catppuccin loads
-tmux new -s test            # Catppuccin statusbar visible
+nvim                        # LazyVim loads
+tmux new -s test            # Catppuccin statusbar
 chezmoi diff                # no diff = dotfiles in sync
 ```
 
@@ -264,7 +276,7 @@ chezmoi diff                # no diff = dotfiles in sync
 |---|---|
 | `Ctrl-a \|` | split pane horizontally |
 | `Ctrl-a -` | split pane vertically |
-| `Ctrl-a hjkl` | navigate panes |
+| `Ctrl-a hjkl` | navigate panes (vim-style) |
 | `Ctrl-a c` | new window |
 | `Ctrl-a r` | reload config |
 | `Ctrl-a d` | detach session |
@@ -278,6 +290,7 @@ chezmoi diff                # no diff = dotfiles in sync
 | `Alt-Shift-1..5` | move window to workspace |
 | `Alt-f` | fullscreen |
 | `Alt-Shift-f` | toggle floating |
+| `Alt-Shift-r` | reload config |
 
 ---
 
@@ -288,6 +301,8 @@ chezmoi diff                # no diff = dotfiles in sync
 | `v` / `vim` / `vi` | `nvim` |
 | `vimdiff` | `nvim -d` |
 | `python` | `python3` |
+| `npm` | `bun` |
+| `pip` | `uv pip` |
 | `cat` | `bat --paging=never` |
 | `ls` / `ll` / `l` / `la` / `lt` | `eza` variants |
 | `grep` | `rg` (ripgrep) |
@@ -298,3 +313,11 @@ chezmoi diff                # no diff = dotfiles in sync
 | `ta` | `tmux attach` |
 | `cz` | `chezmoi` |
 | `sz` | `source ~/.zshrc` |
+
+---
+
+## Claude Code Global Instructions
+
+`~/.claude/CLAUDE.md` is loaded in every Claude Code conversation. Current rules:
+- Use `bun` instead of npm/yarn/pnpm
+- Use `uv` instead of pip/pip3/pipenv
